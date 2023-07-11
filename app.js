@@ -1,14 +1,13 @@
 const express = require('express')
 
-const app = express();
-//chamada do root '/'
-app.get('/', (req, res)=>{
-  res.send('<h1>Lista de tarefas</h1>')
-})
+const checkListRouter = require('./src/routes/checklist')
 
-app.get('/json', (req, res)=>{
-  res.json([{title: 'Terefa X', done: true}, {title: 'Terefa X', done: true}])
-})
+require('./config/database')
+
+const app = express();
+app.use(express.json())
+
+app.use("/checklists", checkListRouter)
 
 app.listen(3000, ()=>{
   console.log('Server Started')
