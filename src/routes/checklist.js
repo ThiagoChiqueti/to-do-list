@@ -24,6 +24,15 @@ router.get('/new', async (req, res)=>{
   }
 })
 
+router.get('/:id/edit', async (req, res) => {
+  try {
+    let checklist = await Checklist.findById(req.params.id)
+    res.status(200).render('checklists/edit', {checklist: checklist})
+  } catch (error) {
+    res.status(442).render('pages/error', {error: 'Erro ao atualizar terefa'})
+  }
+})
+
 
 router.post('/', async (req, res)=>{
   let {name} = req.body.checklist
@@ -49,22 +58,24 @@ router.get('/:id', async (req, res)=>{
 })
 
 router.put('/:id', async (req, res)=>{
-  let { name } = req.body
+  let { name } = req.body.checklist
+  let checklist = await Checklist.findById(req.params.id)
   
   try {
-    let checklist = await Checklist.findByIdAndUpdate(req.params.id, {name})
-    res.status(200).json(checklist)
+    let checklist = await Checklist.update({name})
+    res.redirect('/checklists')
   } catch (error) {
-    res.status(422).json(error)
+    let errors = error.errors
+    res.status(442).render('checklists/edit', {checklist: {...checklist, errors}})
   }
 })
 
 router.delete('/:id', async (req, res)=>{
   try {
     let checklist = await Checklist.findByIdAndRemove(req.params.id)
-    res.status(200).json(checklist)
+    res.redirect('/checklists')
   } catch (error) {
-    res.status(422).json(error)
+    res.status(442).render('pages/error', {error: 'Erro ao deletar terefa'})
     
   }
 })
